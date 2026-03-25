@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  boards       Board[]
+  boardMembers BoardMember[]
+  nodes        Node[]
+}
+
+model Board {
+  id        String   @id @default(uuid())
+  name      String
+  createdBy String
+  createdAt DateTime @default(now())
+
+  creator User          @relation(fields: [createdBy], references: [id])
+  members BoardMember[]
+  nodes   Node[]
+  edges   Edge[]
+}
+
+model BoardMember {
+  id       String   @id @default(uuid())
+  boardId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, userId])
+}
+
+model Node {
+  id        String   @id @default(uuid())
+  boardId   String
+  type      NodeType
+  content   String   @default("")
+  positionX Float    @default(0)
+  positionY Float    @default(0)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  board       Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  creator     User   @relation(fields: [createdBy], references: [id])
+  sourceEdges Edge[] @relation("SourceNode")
+  targetEdges Edge[] @relation("TargetNode")
+}
+
+model Edge {
+  id           String   @id @default(uuid())
+  boardId      String
+  sourceNodeId String
+  targetNodeId String
+  label        String?
+  createdAt    DateTime @default(now())
+
+  board      Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  sourceNode Node  @relation("SourceNode", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  targetNode Node  @relation("TargetNode", fields: [targetNodeId], references: [id], onDelete: Cascade)
+}
+
+enum NodeType {
+  idea
+  decision
+  task
+}
