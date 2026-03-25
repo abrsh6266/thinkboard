@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 export function LoadingScreen() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-indigo-50">
             <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
