@@ -26,7 +26,7 @@ import {
   useUpdateNode,
   useDeleteNode,
 } from "@/hooks/useNodes";
-import { useEdges, useCreateEdge, useDeleteEdge } from "@/hooks/useEdges";
+import { useEdges, useCreateEdge } from "@/hooks/useEdges";
 import { usePresence } from "@/hooks/usePresence";
 import { AddNodeButton } from "@/features/nodes/AddNodeButton";
 import { BoardNode, BoardEdge, NodeType } from "@/types";
