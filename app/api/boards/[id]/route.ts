@@ -4,14 +4,15 @@ import { getUserFromRequest } from "@/lib/supabase/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const userId = await getUserFromRequest(req);
   if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const board = await prisma.board.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       creator: { select: { id: true, email: true, name: true } },
       members: {
@@ -26,16 +27,17 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const userId = await getUserFromRequest(req);
   if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const board = await prisma.board.findUnique({ where: { id: params.id } });
+  const board = await prisma.board.findUnique({ where: { id } });
   if (!board || board.createdBy !== userId)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  await prisma.board.delete({ where: { id: params.id } });
+  await prisma.board.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }

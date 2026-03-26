@@ -2,7 +2,7 @@
 "use client";
 
 import { authService } from "@/services/auth-service";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2, LogIn } from "lucide-react";

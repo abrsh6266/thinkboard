@@ -83,26 +83,26 @@ function CanvasInner({ boardId }: { boardId: string }) {
   const boardEdges = useBoardStore((s) => s.edges);
   const activeLayers = useUIStore((s) => s.activeLayers);
 
-  const createNodeMut = useCreateNode();
-  const updateNodeMut = useUpdateNode();
-  const deleteNodeMut = useDeleteNode();
-  const createEdgeMut = useCreateEdge();
+  const { mutate: createNode } = useCreateNode();
+  const { mutate: updateNode } = useUpdateNode();
+  const { mutate: deleteNode } = useDeleteNode();
+  const { mutate: createEdge } = useCreateEdge();
 
   const draggingRef = useRef<string | null>(null);
   const reactFlowInstance = useReactFlow();
 
   const onContentChange = useCallback(
     (id: string, content: string) => {
-      updateNodeMut.mutate({ id, updates: { content } });
+      updateNode({ id, updates: { content } });
     },
-    [updateNodeMut],
+    [updateNode],
   );
 
   const onDeleteNode = useCallback(
     (id: string) => {
-      deleteNodeMut.mutate(id);
+      deleteNode(id);
     },
-    [deleteNodeMut],
+    [deleteNode],
   );
 
   const flowNodes = useMemo(
@@ -152,9 +152,9 @@ function CanvasInner({ boardId }: { boardId: string }) {
   const debouncedPositionUpdate = useMemo(
     () =>
       debounce((id: string, x: number, y: number) => {
-        updateNodeMut.mutate({ id, updates: { positionX: x, positionY: y } });
+        updateNode({ id, updates: { positionX: x, positionY: y } });
       }, 300),
-    [updateNodeMut],
+    [updateNode],
   );
 
   const onNodeDragStart = useCallback((_: any, node: Node) => {
@@ -172,14 +172,14 @@ function CanvasInner({ boardId }: { boardId: string }) {
   const onConnect = useCallback(
     (conn: Connection) => {
       if (conn.source && conn.target) {
-        createEdgeMut.mutate({
+        createEdge({
           boardId,
           sourceNodeId: conn.source,
           targetNodeId: conn.target,
         });
       }
     },
-    [boardId, createEdgeMut],
+    [boardId, createEdge],
   );
 
   const onEdgeDoubleClick = useCallback(
@@ -204,7 +204,7 @@ function CanvasInner({ boardId }: { boardId: string }) {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
       });
-      createNodeMut.mutate({
+      createNode({
         boardId,
         type,
         content: "",
@@ -212,7 +212,7 @@ function CanvasInner({ boardId }: { boardId: string }) {
         positionY: center.y,
       });
     },
-    [boardId, createNodeMut, reactFlowInstance],
+    [boardId, createNode, reactFlowInstance],
   );
 
   const minimapNodeColor = useCallback((node: Node) => {
